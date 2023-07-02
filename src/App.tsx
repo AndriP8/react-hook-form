@@ -2,8 +2,9 @@ import { Box, Button, Flex, Input } from '@chakra-ui/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  firstName: string;
+  lastName: string;
+  age: number | null;
 };
 
 function App() {
@@ -14,13 +15,14 @@ function App() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      example: '',
-      exampleRequired: '',
+      firstName: '',
+      lastName: '',
+      age: null,
     },
   });
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
-  console.log(watch('example'));
+  console.log(watch('firstName'));
 
   return (
     <Box
@@ -32,13 +34,26 @@ function App() {
       <Box width={500} marginInline="auto" paddingBlock={20}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex gap={8} direction={'column'}>
-            <Input defaultValue="test" {...register('example')} />
             <Input
-              {...register('exampleRequired', {
+              defaultValue="test"
+              {...register('firstName', { maxLength: 20 })}
+            />
+            <Input
+              {...register('lastName', {
                 required: true,
+                pattern: /^[A-Za-z]+$/i,
               })}
             />
-            {errors.exampleRequired && <span>This field is required</span>}
+            {errors.lastName && <span>This field is required</span>}
+            <Input
+              type="number"
+              {...register('age', {
+                required: true,
+                min: 10,
+                max: 100,
+              })}
+            />
+            {errors.age && <span>This field is required</span>}
             <Button type="submit">Submit</Button>
           </Flex>
         </form>
