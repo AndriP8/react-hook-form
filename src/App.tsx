@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Box, Button, Flex, Input } from '@chakra-ui/react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+
+type Inputs = {
+  example: string;
+  exampleRequired: string;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      example: '',
+      exampleRequired: '',
+    },
+  });
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
+  console.log(watch('example'));
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Box
+      minH={'100vh'}
+      width={'100vw'}
+      backgroundColor="blue.900"
+      color="white"
+    >
+      <Box width={500} marginInline="auto" paddingBlock={20}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Flex gap={8} direction={'column'}>
+            <Input defaultValue="test" {...register('example')} />
+            <Input
+              {...register('exampleRequired', {
+                required: true,
+              })}
+            />
+            {errors.exampleRequired && <span>This field is required</span>}
+            <Button type="submit">Submit</Button>
+          </Flex>
+        </form>
+      </Box>
+    </Box>
+  );
 }
 
-export default App
+export default App;
