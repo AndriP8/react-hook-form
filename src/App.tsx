@@ -1,5 +1,7 @@
 import { Box, Button, Flex, Input } from '@chakra-ui/react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 
 type Inputs = {
   firstName: string;
@@ -8,6 +10,12 @@ type Inputs = {
 };
 
 function App() {
+  const schema = z.object({
+    firstName: z.string().min(5, 'Kok pendek banget namanya???'),
+    lastName: z.string().nonempty('Jangan kosong weii'),
+    age: z.number().nullable(),
+  });
+
   const {
     handleSubmit,
     control,
@@ -18,8 +26,10 @@ function App() {
       lastName: '',
       age: null,
     },
+    resolver: zodResolver(schema),
   });
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    alert(JSON.stringify(data, undefined, 2));
 
   console.log(errors);
 
@@ -37,14 +47,20 @@ function App() {
               name="firstName"
               control={control}
               render={({ field }) => <Input {...field} />}
+              aria-invalid={errors.firstName ? 'true' : 'false'}
             />
+
+            {errors.firstName && <span>{errors.firstName.message}</span>}
             <Controller
               name="lastName"
               control={control}
               render={({ field }) => <Input {...field} />}
-              rules={{ required: true, pattern: /^[A-Za-z]+$/i }}
+              rules={{
+                required: 'Wajib isi last name bruh',
+                pattern: /^[A-Za-z]+$/i,
+              }}
             />
-            {errors.lastName && <span>This field is required</span>}
+            {errors.lastName && <span>{errors.lastName.message}</span>}
             <Button type="submit">Submit</Button>
           </Flex>
         </form>
